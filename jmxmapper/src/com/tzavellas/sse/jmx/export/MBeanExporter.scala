@@ -20,7 +20,7 @@ import javax.management.{MBeanServer, ObjectName}
  */
 final class MBeanExporter (
   private val assembler: MBeanInfoAssembler = MBeanInfoAssembler.default,
-  private[export] val namingStrategy: ObjectNamingStrategy = ObjectNamingStrategies.default,
+  val namingStrategy: ObjectNamingStrategy = ObjectNamingStrategies.default,
   private val ifAlreadyExists: IfAlreadyExists.Enum = IfAlreadyExists.Fail,
   val server: MBeanServer = ManagementFactory.getPlatformMBeanServer)
     extends MBeanRegistrationSupport {
