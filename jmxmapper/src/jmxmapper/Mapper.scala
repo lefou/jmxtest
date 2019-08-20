@@ -10,6 +10,7 @@ import javax.management.{DynamicMBean, MBeanNotificationInfo, ObjectName}
 import javax.management.openmbean.{ArrayType, CompositeData, CompositeDataSupport, CompositeType, OpenMBeanAttributeInfo, OpenMBeanAttributeInfoSupport, OpenMBeanConstructorInfo, OpenMBeanInfoSupport, OpenMBeanOperationInfo, OpenType, SimpleType, TabularDataSupport, TabularType}
 
 class Mapper() {
+
   type Element = (AnyRef, OpenType[_])
 
   def mapProduct(cc: Product): DynamicMBean = {
