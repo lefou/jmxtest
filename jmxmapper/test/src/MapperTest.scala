@@ -27,7 +27,7 @@ trait MBeanTestSupport {
 
   def objectName[T: ClassTag] = exporter.namingStrategy(classTag[T].runtimeClass)
 
-  def withExport[T <: Product : ClassTag](cc: T)(f: => Unit) = {
+  def withExport[T <: Product: ClassTag](cc: T)(f: => Unit) = {
     val mbean = mapper.mapProduct(cc)
     val name = new ObjectName(s"${cc.getClass().getPackage().getName()}:type=${cc.getClass().getSimpleName()}")
     exporter.export(mbean, name)
@@ -48,10 +48,10 @@ class MapperTest extends FreeSpec with MBeanTestSupport {
 
   "Create mapping, export and read attributes" in {
     withExport(caseClass1) {
-      assert(attribute[CaseClass]("aString") === caseClass1.aString)
-      assert(attribute[CaseClass]("aInt") === caseClass1.aInt)
-//      assert(attribute[CaseClass]("aStringArray") === caseClass1.aStringArray)
-      val stringArrayAttr = attribute[CaseClass]("aStringArray")
+      assert(attribute[CaseClass1]("aString") === caseClass1.aString)
+      assert(attribute[CaseClass1]("aInt") === caseClass1.aInt)
+      //      assert(attribute[CaseClass]("aStringArray") === caseClass1.aStringArray)
+      val stringArrayAttr = attribute[CaseClass1]("aStringArray")
     }
   }
 
@@ -59,37 +59,47 @@ class MapperTest extends FreeSpec with MBeanTestSupport {
 
 object MapperTest {
 
-  case class CaseClass(
-                        aString: String,
-                        aInt: Int,
-                        aStringArray: Array[String],
-                        aStringSeq: Seq[String]
-                      )
+  case class CaseClass1(
+    aString: String,
+    aInt: Int,
+    aStringArray: Array[String],
+    aStringSeq: Seq[String]
+  )
 
-  val caseClass1 = CaseClass(
+  val caseClass1 = CaseClass1(
     aString = "aString",
     aInt = 1,
     aStringArray = Array("s"),
     aStringSeq = Seq("s")
   )
 
+  case class CaseClass2(
+    name: String,
+    cc1: CaseClass1
+  )
+
   def main(args: Array[String]): Unit = {
 
-    //    val mbs = ManagementFactory.getPlatformMBeanServer();
+    val support = new MBeanTestSupport {
+      override def exporter: MBeanExporter = new jmx.export.MBeanExporter(ifAlreadyExists = IfAlreadyExists.Replace)
+    }
 
-    import com.tzavellas.sse.jmx
-    val exporter = new jmx.export.MBeanExporter(ifAlreadyExists = IfAlreadyExists.Replace)
+    support.withExport(caseClass1) {
+      support.withExport(CaseClass2("cc2", caseClass1)) {
+        println("Press any key...")
+        System.in.read()
+      }
+    }
 
-    val mapper = new Mapper()
-    val mbean = mapper.mapProduct(caseClass1)
-
-    exporter.export(mbean)
-
-    val sample = new SampleOpenMBean()
-    exporter.export(sample)
-
-    println("Press any key...")
-    System.in.read()
+    //    val mapper = new Mapper()
+    //    val mbean = mapper.mapProduct(caseClass1)
+    //    exporter.export(mbean)
+    //
+    //    val mbean2 = mapper.mapProduct(CaseClass2("cc2", caseClass1))
+    //  exporter.export(mbean2)
+    //
+    //    println("Press any key...")
+    //    System.in.read()
 
   }
 }
