@@ -1,4 +1,4 @@
-package jmxmapper
+package jmxmapper.impl
 
 import java.lang.management.ManagementFactory
 
@@ -8,7 +8,7 @@ import javax.management.ObjectName
 
 trait MBeanTestSupport {
 
-  lazy val mapper = new Mapper()
+  lazy val mapper = new OpenMBeanMapperImpl()
 
   def server = ManagementFactory.getPlatformMBeanServer();
 

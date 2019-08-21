@@ -1,7 +1,7 @@
-package jmxmapper
+package jmxmapper.impl
 
-import javax.management.{Attribute, AttributeList, AttributeNotFoundException, DynamicMBean, MBeanInfo}
 import javax.management.openmbean.OpenType
+import javax.management.{Attribute, AttributeList, AttributeNotFoundException, DynamicMBean, MBeanInfo}
 
 class GenericImmutableOpenMBean(mBeanInfo: MBeanInfo, attributes: Map[String, GenericImmutableOpenMBean.Element]) extends DynamicMBean {
 

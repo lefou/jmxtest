@@ -1,17 +1,16 @@
-package jmxmapper
+package jmxmapper.impl
 
 import java.util.Date
 import java.{lang => jl}
-
+import java.{math => jm}
 import scala.collection.JavaConverters._
-import scala.collection.immutable
 
 import javax.management.{DynamicMBean, MBeanNotificationInfo, ObjectName}
 import javax.management.openmbean.{ArrayType, CompositeData, CompositeDataSupport, CompositeType, OpenMBeanAttributeInfo, OpenMBeanAttributeInfoSupport, OpenMBeanConstructorInfo, OpenMBeanInfoSupport, OpenMBeanOperationInfo, OpenType, SimpleType, TabularDataSupport, TabularType}
+import jmxmapper.OpenMBeanMapper
 
-class Mapper() {
-
-  type Element = (AnyRef, OpenType[_])
+class OpenMBeanMapperImpl() extends OpenMBeanMapper {
+  import OpenMBeanMapperImpl._
 
   def mapProduct(cc: Product): DynamicMBean = {
     val elements = productToMap(cc)
@@ -87,7 +86,9 @@ class Mapper() {
       case x: jl.Double => x -> SimpleType.DOUBLE
       case x: String => x -> SimpleType.STRING
       case x: BigDecimal => x.bigDecimal -> SimpleType.BIGDECIMAL
+      case x: jm.BigDecimal => x -> SimpleType.BIGDECIMAL
       case x: BigInt => x.bigInteger -> SimpleType.BIGINTEGER
+      case x: jm.BigInteger => x -> SimpleType.BIGINTEGER
       case x: Date => x -> SimpleType.DATE
       case x: ObjectName => x -> SimpleType.OBJECTNAME
 
@@ -130,7 +131,6 @@ class Mapper() {
         }
         value.putAll(allValues.toArray[CompositeData])
 
-        // TODO: fill data
         value -> openType
 
       // map case classes
@@ -154,4 +154,8 @@ class Mapper() {
 
   }
 
+}
+
+object OpenMBeanMapperImpl {
+  type Element = (AnyRef, OpenType[_])
 }
